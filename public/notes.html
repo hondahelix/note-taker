@@ -39,42 +39,50 @@
   <script src="/assets/js/index.js"></script>
 </body>
 <script>
-    function runNoteData() {
-    $.ajax({ url: "/api/notes", method: "GET" })
-      .then(function(noteData) {
-        console.log(noteData);
-        console.log("------------------------------------");
-
-        // Loop through and display each note title
-        for (var i = 0; i < noteData.length; i++) {
+  //shows notes on side
+  function loadNoteData(){
+    $.get("/api/notes", function(data) {
+      console.log(data);
+      $(".list-group").empty();
+      console.log(data);
+        for(const note of data){
           var noteList = $(".list-group");
-          var listItem = $("<li"+" id = "+"'"+(i+1)+"'"+" class='list-group-item mt-4'>");
-          listItem.append($("<p>").text(noteData[i].title));
+          var listItem = $("<li"+" id = "+"'"+note.id+"'"+ " class='list-group-item mt-4'>"+note.title+"</li>");
           noteList.append(listItem);
-        }
-      });
+        } 
+    });
   }
-  $("#save").on("click", function(event) {
+  //fix
+  $("#save").unbind("click").click(function(event) {
     event.preventDefault();
-    $.ajax({ url: "/api/notes", method: "GET" })
-      .then(function(noteData) {
-        var newNote = {
+    console.log(event);
+    $.get("/api/notes", function(data) {
+        const newNote = {
         title: $(".note-title").val(),
         text: $(".note-textarea").val(),
-        id: noteData.length+1
-    };
-    $.post("/api/notes", newNote,
-      function() {
-        // Clear the form when saving
-        $(".note-title").val("");
-        $(".note-textarea").val("");
+        id: data.length+1
+      };
+      $.post("/api/notes/new", newNote)
+        .then(function(data) {
+          console.log("added", data);
       });
-      console.log(newNote);
+    });
+    location.reload();
+    return false;
+  });
+    //good
+  $("ul").unbind("click").click("li.list-group-item" ,function(event) {
+    event.preventDefault();
+    //console.log(event.target.id);
+    $.ajax({ url: "/api/notes/"+ event.target.id, method: "GET" })
+      .then(function(noteData) {
+        // console.log(noteData);
+        console.log(noteData.title);
+        $(".note-title").val(noteData.title);
+        $(".note-textarea").text(noteData.text);
       });
-
-
   });
 
-  runNoteData();
+  loadNoteData();
 </script>
 </html>
