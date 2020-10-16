@@ -38,5 +38,22 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="/assets/js/index.js"></script>
 </body>
+<script>
+    function runNoteData() {
+    $.ajax({ url: "/api/notes", method: "GET" })
+      .then(function(noteData) {
+        console.log(noteData);
+        console.log("------------------------------------");
 
+        // Loop through and display each note title
+        for (var i = 0; i < noteData.length; i++) {
+          var noteList = $(".list-group");
+          var listItem = $("<li class='list-group-item mt-4'>");
+          listItem.append($("<p>").text(noteData[i].title));
+          noteList.append(listItem);
+        }
+      });
+  }
+  runNoteData();
+</script>
 </html>
