@@ -17,7 +17,7 @@
     <a class="navbar-brand" href="/">Note Taker
     </a>
     <div class="icons">
-      <i class="fas fa-save text-light save-note"></i>
+      <i id = "save" class="fas fa-save text-light save-note"></i>
       <i class="fas fa-pen text-light new-note"></i>
     </div>
   </nav>
@@ -48,12 +48,33 @@
         // Loop through and display each note title
         for (var i = 0; i < noteData.length; i++) {
           var noteList = $(".list-group");
-          var listItem = $("<li class='list-group-item mt-4'>");
+          var listItem = $("<li"+" id = "+"'"+(i+1)+"'"+" class='list-group-item mt-4'>");
           listItem.append($("<p>").text(noteData[i].title));
           noteList.append(listItem);
         }
       });
   }
+  $("#save").on("click", function(event) {
+    event.preventDefault();
+    $.ajax({ url: "/api/notes", method: "GET" })
+      .then(function(noteData) {
+        var newNote = {
+        title: $(".note-title").val(),
+        text: $(".note-textarea").val(),
+        id: noteData.length+1
+    };
+    $.post("/api/notes", newNote,
+      function() {
+        // Clear the form when saving
+        $(".note-title").val("");
+        $(".note-textarea").val("");
+      });
+      console.log(newNote);
+      });
+
+
+  });
+
   runNoteData();
 </script>
 </html>
