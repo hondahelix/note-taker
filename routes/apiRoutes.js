@@ -1,7 +1,8 @@
+const { request } = require("http");
 var noteData = require("../db/db");
 
 module.exports = function(app) {
-    app.get("/api/notes", function(req, res) {
+    app.get("/api/note", function(req, res) {
         res.json(noteData);
       });
     app.get("/api/notes/:id", function(req, res) {
@@ -15,7 +16,17 @@ module.exports = function(app) {
         }
         return res.json(false);
     });
-    app.post("/api/notes/new", function(req, res) {
+    app.delete("/api/notes/:id", function(req, res) {
+        console.log(req.params.id);
+        for(var i = 0; i < noteData.length; i++) {
+            if(noteData[i].id == req.params.id) {
+                noteData.splice(i, 1);
+                return res.json(true);
+            }
+        }
+        return res.json(false);
+    });
+    app.post("/api/notes", function(req, res) {
         console.log(req.body.id);
         console.log(noteData);
         console.log("hit");

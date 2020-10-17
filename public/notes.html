@@ -39,30 +39,32 @@
   <script src="/assets/js/index.js"></script>
 </body>
 <script>
+    loadNoteData();
   //shows notes on side
   function loadNoteData(){
-    $.get("/api/notes", function(data) {
+    $.get("/api/note", function(data) {
       console.log(data);
       $(".list-group").empty();
       console.log(data);
         for(const note of data){
           var noteList = $(".list-group");
           var listItem = $("<li"+" id = "+"'"+note.id+"'"+ " class='list-group-item mt-4'>"+note.title+"</li>");
+          listItem.append($("<i id = "+"'"+note.id+"'"+ " class='fa fa-trash float-right' style='font-size:30px;color:red'></i>"));
           noteList.append(listItem);
         } 
     });
   }
-  //fix
-  $("#save").unbind("click").click(function(event) {
+  //saves file as new id if save button
+  $("#save").on("click",function(event) {
     event.preventDefault();
     console.log(event);
-    $.get("/api/notes", function(data) {
+    $.get("/api/note", function(data) {
         const newNote = {
         title: $(".note-title").val(),
         text: $(".note-textarea").val(),
         id: data.length+1
       };
-      $.post("/api/notes/new", newNote)
+      $.post("/api/notes", newNote)
         .then(function(data) {
           console.log("added", data);
       });
@@ -71,9 +73,10 @@
     return false;
   });
     //good
-  $("ul").unbind("click").click("li.list-group-item" ,function(event) {
+  $(document).on("click","li.list-group-item" ,function(event) {
     event.preventDefault();
     //console.log(event.target.id);
+    //change this to match the rest
     $.ajax({ url: "/api/notes/"+ event.target.id, method: "GET" })
       .then(function(noteData) {
         // console.log(noteData);
@@ -82,7 +85,14 @@
         $(".note-textarea").text(noteData.text);
       });
   });
+  $(document).one("click","i.fa-trash",function(event){
+    $.ajax({url: "/api/notes/"+event.target.id, type: 'DELETE',
+      success: function(result) {
+        location.reload();
+      }
+   });
+  });
 
-  loadNoteData();
+
 </script>
 </html>
