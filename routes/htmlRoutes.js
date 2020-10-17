@@ -1,5 +1,5 @@
 var path = require("path");
-var noteData = require("../db/db");
+var noteData = require("../db");
 
 module.exports = function(app) {
 
